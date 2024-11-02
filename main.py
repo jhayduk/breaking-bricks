@@ -13,6 +13,8 @@ python main.py
 """
 import argparse
 import pygame
+import random
+
 #
 # Parse any arguments passed in
 #
@@ -51,14 +53,23 @@ bat_rect.y = screen.get_height() - 100
 # Bat speed is defined in pixels per frame (ppf) and then calculated into
 # pixels per millisecond (ppm) so that it can be multiplied by the actual
 # time between each from to move the bat.
-bat_speed_pfm = 10
-bat_speed_ppm = bat_speed_pfm / mpf
+bat_speed_ppf = 10
+bat_speed_ppm = bat_speed_ppf / mpf
 
 
 # ball
 ball = pygame.image.load("./images/football.png")
 ball.convert_alpha()
 ball_rect = ball.get_rect()
+ball_start_center = screen.get_rect().center
+ball_speed_ppf = (3.0, 3.0)
+initial_ball_speed_ppm = (ball_speed_ppf[0] / mpf, ball_speed_ppf[1] / mpf)
+current_ball_speed_ppm = initial_ball_speed_ppm
+# When the ball is displayed at the start or after being missed, it
+# remains static until ball_served is changed to True by hitting
+# the space bar.
+ball_served = False
+ball_rect.center = ball_start_center
 
 # bricks
 brick = pygame.image.load("./images/brick.png")
@@ -100,6 +111,7 @@ while not game_over:
             game_over = True
 
     # Process any keys (plural) that are pressed
+    # This will update the bat and/or serve the ball
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
         desired_left_position = int(bat_rect.left - (bat_speed_ppm * dt))
@@ -113,6 +125,41 @@ while not game_over:
             bat_rect.right = desired_right_position
         else:
             bat_rect.right = screen.get_width()
+    if keys[pygame.K_SPACE] and not ball_served:
+        ball_served = True
+        current_ball_speed_ppm = initial_ball_speed_ppm
+        # Randomize in which x direction the ball will be served.
+        current_ball_speed_ppm = (current_ball_speed_ppm[0] * random.uniform(-1.0, 1.0), current_ball_speed_ppm[1])
+
+    # Update the ball
+    if ball_served:
+        ball_rect.x += current_ball_speed_ppm[0] * dt
+        ball_rect.y += current_ball_speed_ppm[1] * dt
+        #
+        # Check for collisions with the screen (or running off the bottom)
+        # Notes that code only allows the ball to go all the way off the
+        # screen on the bottom.
+        #
+        if ball_rect.left <= 0:
+            # Left
+            ball_rect.left = 0
+            current_ball_speed_ppm = (current_ball_speed_ppm[0] * -1, current_ball_speed_ppm[1])
+        elif ball_rect.top <= 0:
+            # Top
+            ball_rect.top = 0
+            current_ball_speed_ppm = (current_ball_speed_ppm[0], current_ball_speed_ppm[1] * -1)
+        elif ball_rect.right >= screen.get_width():
+            # Right
+            ball_rect.right = screen.get_width()
+            current_ball_speed_ppm = (current_ball_speed_ppm[0] * -1, current_ball_speed_ppm[1])
+        elif ball_rect.y > screen.get_height():
+            # Bottom
+            # If the ball goes off the bottom of the screen, reset it
+            # The speed will be initialized when it is served during
+            # event process of the space bar being hit.
+            # Todo: The player should lose a life when this happens.
+            ball_served = False
+            ball_rect.center = ball_start_center
 
     # Draw the bricks
     for brick_location in brick_locations:
@@ -120,6 +167,9 @@ while not game_over:
 
     # Draw the bat
     screen.blit(bat, bat_rect)
+
+    # Draw the ball
+    screen.blit(ball, ball_rect)
 
     # Update the display to pick up what was drawn above for this frame
     pygame.display.update()
