@@ -160,6 +160,47 @@ while not game_over:
             # Todo: The player should lose a life when this happens.
             ball_served = False
             ball_rect.center = ball_start_center
+        #
+        # Now check for collisions with the bat
+        # If it hits clean on the top (meaning the whole ball is over the bat),
+        # then just speed in the y direction is inverted. If, however it hits
+        # while only some of the ball is over the bat, then the ball also
+        # bounces in the x direction of the edge hit (right if it was the right
+        # edge and left if it was the left edge). If top of the ball more than
+        # half-way past the edge of the bat, then it only bounces in the x
+        # direction and continues to fall.
+        #
+        #   Bat      Ball    Ball     Bat
+        #   Left     Left    Right   Right
+        #    |        |        |       |
+        #    |        v        v       |
+        #    |        +--------+       |
+        #    v        | (Ball) |       v
+        #    +--------+--------+-------+ <------ Bat Top
+        #    |           Bat           | <------ Bat Center X
+        #    +-------------------------+ <------ Bat Bottom
+        #
+        elif ball_rect.bottom >= bat_rect.top and ball_rect.top <= bat_rect.bottom:
+            # This means a collision is possible
+            if ball_rect.left >= bat_rect.left and ball_rect.right <= bat_rect.right:
+                # Top
+                current_ball_speed_ppm = (current_ball_speed_ppm[0], current_ball_speed_ppm[1] * -1)
+            elif ball_rect.left < bat_rect.left <= ball_rect.right:
+                # Left Side
+                if ball_rect.top <= bat_rect.centery:
+                    # Top Left
+                    current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]) * -1, current_ball_speed_ppm[1] * -1)
+                elif ball_rect.top <= bat_rect.bottom:
+                    # Bottom Left
+                    current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]) * -1, current_ball_speed_ppm[1])
+            elif ball_rect.left <= bat_rect.right < ball_rect.right:
+                # Right Side
+                if ball_rect.top <= bat_rect.centery:
+                    # Top Right
+                    current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]), current_ball_speed_ppm[1] * -1)
+                elif ball_rect.top <= bat_rect.bottom:
+                    # Bottom Right
+                    current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]), current_ball_speed_ppm[1])
 
     # Draw the bricks
     for brick_location in brick_locations:
