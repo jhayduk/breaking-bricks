@@ -9,7 +9,7 @@ Run using pipenv:
 ```bash
 pipenv shell
 pipenv install
-python breakout.py
+python main.py
 ```
 
 ## About
