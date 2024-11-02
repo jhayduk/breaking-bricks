@@ -1,7 +1,9 @@
 """
 The main file for the breaking-bricks game.
 
-Note that all x and y values are in pixels.
+Notes:
+    1. All x and y values are in pixels.
+    2. Unless otherwise noted, all time is in milliseconds.
 
 Run with:
 
@@ -31,10 +33,11 @@ pygame.display.set_caption("Breaking Bricks")
 
 #
 # Define desired frame rate in frames per second (fps)
-# And calculate how many milliseconds per frame (mpf) that would correspond
-# to if the frame rate were hit exactly. Note that mpf is a floating point value.
+# Then calculate how many milliseconds per frame (mpf) would correspond to it
+# if the frame rate were hit exactly each time.
+#
 fps = 55
-mpf = (1.0 / fps) * 1000
+mpf = (1 / fps) * 1000
 
 #
 # Set up resources
@@ -84,7 +87,7 @@ for row in range(brick_rows):
 clock = pygame.time.Clock()
 game_over = False
 while not game_over:
-    dt_msecs = clock.tick(fps)
+    dt = clock.tick(fps)
 
     # Clear the screen
     screen.fill((0, 0, 0))
@@ -99,13 +102,13 @@ while not game_over:
     # Process any keys (plural) that are pressed
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        desired_left_position = int(bat_rect.left - (bat_speed_ppm * dt_msecs))
+        desired_left_position = int(bat_rect.left - (bat_speed_ppm * dt))
         if desired_left_position > 0:
             bat_rect.left = desired_left_position
         else:
             bat_rect.left = 0
     if keys[pygame.K_RIGHT]:
-        desired_right_position = int(bat_rect.right + (bat_speed_ppm * dt_msecs))
+        desired_right_position = int(bat_rect.right + (bat_speed_ppm * dt))
         if desired_right_position < screen.get_width():
             bat_rect.right = desired_right_position
         else:
