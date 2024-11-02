@@ -9,8 +9,18 @@ pipenv shell
 python main.py
 
 """
+import argparse
 import pygame
+#
+# Parse any arguments passed in
+#
+parser = argparse.ArgumentParser(description="Run the Breaking Bricks game.")
+parser.add_argument('--show-all-events', action='store_true', help='Show all Pygame events')
+args = parser.parse_args()
 
+#
+# Init the pygame framework
+#
 pygame.init()
 
 #
@@ -81,6 +91,8 @@ while not game_over:
 
     # Handle events
     for event in pygame.event.get():
+        if args.show_all_events:
+            print(event)
         if event.type == pygame.QUIT:
             game_over = True
 
