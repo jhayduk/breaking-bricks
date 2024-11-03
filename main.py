@@ -42,6 +42,20 @@ fps = 55
 mpf = (1 / fps) * 1000
 
 #
+# Check for joysticks and controllers
+#
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+if len(joysticks) > 0:
+    print(f"Found:")
+else:
+    print("No joysticks found")
+for joystick in joysticks:
+    print(f"  {joystick.get_name()}")
+# Range is 0.0 to 1.0. Higher values require a larger movement of the stick to start moving the bat.
+joystick_stickiness = 0.1
+
+#
 # Set up resources
 #
 
@@ -114,20 +128,36 @@ while not game_over:
 
     # Process any keys (plural) that are pressed
     # This will update the bat and/or serve the ball
+
+    joy_left = False
+    joy_right = False
+    joy_button_pressed = False
+    for joystick in joysticks:
+        joy_x = joystick.get_axis(0)
+        if joy_x < -joystick_stickiness:
+            joy_left = True
+        elif joy_x > joystick_stickiness:
+            joy_right = True
+        num_buttons = joystick.get_numbuttons()
+        for button_index in range(joystick.get_numbuttons()):
+            button_value = joystick.get_button(button_index)
+            if button_value > 0:
+                joy_button_pressed = True
+
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_LEFT] or joy_left:
         desired_left_position = int(bat_rect.left - (bat_speed_ppm * dt))
         if desired_left_position > 0:
             bat_rect.left = desired_left_position
         else:
             bat_rect.left = 0
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] or joy_right:
         desired_right_position = int(bat_rect.right + (bat_speed_ppm * dt))
         if desired_right_position < screen.get_width():
             bat_rect.right = desired_right_position
         else:
             bat_rect.right = screen.get_width()
-    if keys[pygame.K_SPACE] and not ball_served:
+    if (keys[pygame.K_SPACE] or joy_button_pressed) and not ball_served:
         ball_served = True
         current_ball_speed_ppm = initial_ball_speed_ppm
         # Randomize in which x direction the ball will be served.
