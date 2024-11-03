@@ -84,12 +84,14 @@ brick_cols = screen.get_width() // (brick.get_width() + brick_gap_x)
 # brick displayed needs to be ignored because it, effectively, is not part
 # of the width of the set of blocks that are displayed. So, there is one
 # less x gap than there are columns.
-block_set_width = ((brick.get_width() + brick_gap_x) * brick_cols) - brick_gap_x
+gapped_row_height = brick_rect.height + brick_gap_y
+gapped_brick_width = brick_rect.width + brick_gap_x
+block_set_width = (gapped_brick_width * brick_cols) - brick_gap_x
 side_gap = (screen.get_width() - block_set_width) // 2
 for row in range(brick_rows):
-    brick_y = row * (brick_rect.height + brick_gap_y)
+    brick_y = row * gapped_row_height
     for col in range(brick_cols):
-        brick_x = side_gap + (col * (brick_rect.width + brick_gap_x))
+        brick_x = side_gap + (col * gapped_brick_width)
         brick_locations.append((brick_x, brick_y))
 
 #
