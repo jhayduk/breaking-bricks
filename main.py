@@ -209,7 +209,68 @@ while not game_over:
                     bat_hit_the_ball = True
             if bat_hit_the_ball:
                 # The ball speeds up a little bit with each hit
-                current_ball_speed_ppm = (current_ball_speed_ppm[0] * 1.10, current_ball_speed_ppm[1] * 1.10)
+                current_ball_speed_ppm = (current_ball_speed_ppm[0] * 1.01, current_ball_speed_ppm[1] * 1.01)
+        #
+        # Now check for collisions with any of the bricks
+        #
+        # When a brick is hit, delete it and bounce the ball in the direction
+        # that it hit the brick.
+        #
+        #   Bat                       Bat
+        #   Left                     Right
+        #    |                         |
+        #    v                         v
+        #    +-------------------------+ <------ Brick Top
+        #    |          Brick          |
+        #    +--------+--------+-------+ <------ Brick Bottom
+        #             | (Ball) |
+        #             +--------+
+        #             ^        ^
+        #             |        |
+        #            Ball    Ball
+        #            Left    Right
+        #
+        deleted_bricks_locations = []
+        for brick_location in brick_locations:
+            # TODO: It may be better to store brick rect objects than a tuple of (x, y).
+            brick_left, brick_top = brick_location
+            brick_location_rect = pygame.Rect(brick_left, brick_top, brick_rect.width, brick_rect.height)
+            if ball_rect.colliderect(brick_location_rect):
+                deleted_bricks_locations.append(brick_location)
+                #
+                # Now bounce the ball in the direction(s) hit. Hits in the x and
+                # y directions are check interdependently from each other to
+                # handle corner hits.
+                #
+                if ball_rect.left <= brick_location_rect.left:
+                    # Left
+                    # Part of the ball is to the left of the brick. We already
+                    # know it collided with the brick, so it must have hit along
+                    # the left edge, or over the top left or under the bottom
+                    # left corner.
+                    current_ball_speed_ppm = (current_ball_speed_ppm[0] * -1, current_ball_speed_ppm[1])
+                elif ball_rect.right >= brick_location_rect.right:
+                    # Right
+                    # Part of the ball is to the right of the brick. We already
+                    # know it collided with the brick, so it must have hit along
+                    # the right edge, or over the top right or under the bottom
+                    # right corner.
+                    current_ball_speed_ppm = (current_ball_speed_ppm[0] * -1, current_ball_speed_ppm[1])
+                if ball_rect.top <= brick_location_rect.top:
+                    # Top
+                    # Part of the ball above the brick. We already
+                    # know it collided with the brick, so it must have hit along
+                    # the top edge, or over the top left or top right corner.
+                    current_ball_speed_ppm = (current_ball_speed_ppm[0], current_ball_speed_ppm[1] * -1)
+                elif ball_rect.bottom >= brick_location_rect.bottom:
+                    # Bottom
+                    # Part of the ball is below the brick. We already
+                    # know it collided with the brick, so it must have it along
+                    # the bottom edge, or under the top left or top right corner.
+                    current_ball_speed_ppm = (current_ball_speed_ppm[0], current_ball_speed_ppm[1] * -1)
+
+        for deleted_brick_location in deleted_bricks_locations:
+            brick_locations.remove(deleted_brick_location)
 
     # Draw the bricks
     for brick_location in brick_locations:
