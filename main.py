@@ -132,6 +132,7 @@ while not game_over:
         current_ball_speed_ppm = (current_ball_speed_ppm[0] * random.uniform(-1.0, 1.0), current_ball_speed_ppm[1])
 
     # Update the ball
+    bat_hit_the_ball = False
     if ball_served:
         ball_rect.x += current_ball_speed_ppm[0] * dt
         ball_rect.y += current_ball_speed_ppm[1] * dt
@@ -185,22 +186,30 @@ while not game_over:
             if ball_rect.left >= bat_rect.left and ball_rect.right <= bat_rect.right:
                 # Top
                 current_ball_speed_ppm = (current_ball_speed_ppm[0], current_ball_speed_ppm[1] * -1)
+                bat_hit_the_ball = True
             elif ball_rect.left < bat_rect.left <= ball_rect.right:
                 # Left Side
                 if ball_rect.top <= bat_rect.centery:
                     # Top Left
                     current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]) * -1, current_ball_speed_ppm[1] * -1)
+                    bat_hit_the_ball = True
                 elif ball_rect.top <= bat_rect.bottom:
                     # Bottom Left
                     current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]) * -1, current_ball_speed_ppm[1])
+                    bat_hit_the_ball = True
             elif ball_rect.left <= bat_rect.right < ball_rect.right:
                 # Right Side
                 if ball_rect.top <= bat_rect.centery:
                     # Top Right
                     current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]), current_ball_speed_ppm[1] * -1)
+                    bat_hit_the_ball = True
                 elif ball_rect.top <= bat_rect.bottom:
                     # Bottom Right
                     current_ball_speed_ppm = (abs(current_ball_speed_ppm[0]), current_ball_speed_ppm[1])
+                    bat_hit_the_ball = True
+            if bat_hit_the_ball:
+                # The ball speeds up a little bit with each hit
+                current_ball_speed_ppm = (current_ball_speed_ppm[0] * 1.10, current_ball_speed_ppm[1] * 1.10)
 
     # Draw the bricks
     for brick_location in brick_locations:
