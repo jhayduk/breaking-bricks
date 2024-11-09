@@ -15,6 +15,9 @@ import argparse
 import pygame
 import random
 
+from ControllerInput import ControllerInput
+from Paddle import Paddle
+
 #
 # Parse any arguments passed in
 #
@@ -44,16 +47,19 @@ mpf = (1 / fps) * 1000
 #
 # Check for joysticks and controllers
 #
-pygame.joystick.init()
-joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-if len(joysticks) > 0:
-    print(f"Found:")
-else:
-    print("No joysticks found")
-for joystick in joysticks:
-    print(f"  {joystick.get_name()}")
-# Range is 0.0 to 1.0. Higher values require a larger movement of the stick to start moving the bat.
-joystick_stickiness = 0.1
+show_controller_status = False
+controller_input = ControllerInput()
+
+#
+# Set up game elements
+#
+# These will be updated and drawn in the order they appear in the elements list
+#
+elements = []
+
+# paddle
+paddle = Paddle(x=0, y=screen.get_height() - 100)
+elements.append(paddle)
 
 #
 # Set up resources
@@ -63,7 +69,7 @@ joystick_stickiness = 0.1
 bat = pygame.image.load("./images/paddle.png")
 bat.convert_alpha()
 bat_rect = bat.get_rect()
-bat_rect.y = screen.get_height() - 100
+bat_rect.y = screen.get_height() - 50
 # Bat speed is defined in pixels per frame (ppf) and then calculated into
 # pixels per millisecond (ppm) so that it can be multiplied by the actual
 # time between each from to move the bat.
@@ -119,45 +125,20 @@ while not game_over:
     # Clear the screen
     screen.fill((0, 0, 0))
 
-    # Handle events
-    for event in pygame.event.get():
+    # Handle all events that occurred since the last frame
+    all_events = pygame.event.get()
+    for event in all_events:
         if args.show_all_events:
             print(event)
         if event.type == pygame.QUIT:
             game_over = True
-
-    # Process any keys (plural) that are pressed
-    # This will update the bat and/or serve the ball
-
-    joy_left = False
-    joy_right = False
-    joy_button_pressed = False
-    for joystick in joysticks:
-        joy_x = joystick.get_axis(0)
-        if joy_x < -joystick_stickiness:
-            joy_left = True
-        elif joy_x > joystick_stickiness:
-            joy_right = True
-        num_buttons = joystick.get_numbuttons()
-        for button_index in range(joystick.get_numbuttons()):
-            button_value = joystick.get_button(button_index)
-            if button_value > 0:
-                joy_button_pressed = True
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB:
+            show_controller_status = not show_controller_status
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] or joy_left:
-        desired_left_position = int(bat_rect.left - (bat_speed_ppm * dt))
-        if desired_left_position > 0:
-            bat_rect.left = desired_left_position
-        else:
-            bat_rect.left = 0
-    if keys[pygame.K_RIGHT] or joy_right:
-        desired_right_position = int(bat_rect.right + (bat_speed_ppm * dt))
-        if desired_right_position < screen.get_width():
-            bat_rect.right = desired_right_position
-        else:
-            bat_rect.right = screen.get_width()
-    if (keys[pygame.K_SPACE] or joy_button_pressed) and not ball_served:
+
+    # TODO: Check for joystick start selected as well.
+    if (keys[pygame.K_SPACE]) and not ball_served:
         ball_served = True
         current_ball_speed_ppm = initial_ball_speed_ppm
         # Randomize in which x direction the ball will be served.
@@ -304,6 +285,10 @@ while not game_over:
         for deleted_brick_location in deleted_bricks_locations:
             brick_locations.remove(deleted_brick_location)
 
+    # Update the elements
+    for element in elements:
+        element.update(dt=dt, events=all_events, screen=screen)
+
     # Draw the bricks
     for brick_location in brick_locations:
         screen.blit(brick, brick_location)
@@ -313,6 +298,14 @@ while not game_over:
 
     # Draw the ball
     screen.blit(ball, ball_rect)
+
+    # Draw the elements
+    for element in elements:
+        element.draw(screen)
+
+    # Draw any debug elements
+    if show_controller_status:
+        controller_input.show_current_state(screen)
 
     # Update the display to pick up what was drawn above for this frame
     pygame.display.update()
