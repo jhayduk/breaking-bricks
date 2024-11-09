@@ -13,6 +13,7 @@ import pygame
 
 from controller_config import _button_mapping
 
+
 class ControllerInput:
     # The single instance of this class. This is intended to be used internally only.
     _instance = None
