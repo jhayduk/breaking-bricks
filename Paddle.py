@@ -32,27 +32,55 @@ _MAX_PADDLE_SPEED_PPM = 0.55
 
 
 class Paddle(GameElement):
+    # The single instance of the paddle. This is intended to be used internally only.
+    _instance = None
+
+    #
+    # A flag to make sure that later calls do not reset anything.
+    # This is intended to be used internally only.
+    #
+    _is_initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Make the Paddle a singleton class since there will only ever be one
+        of them. This also allows the ball class access the paddle when
+        checking if it collided with it.
+
+        TODO: Is there a way to not have multiple users of the paddle object?
+        """
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
     def __init__(self, x, y):
-        #
-        # Make sure pygame is initialized. Normally, this is expected to be
-        # done before elements are created, so issue a warning if it had to
-        # be done here.
-        #
-        if not pygame.get_init():
-            print(f"WARNING: pygame was not initialized when a {self.__class__.__name__} object was instantiated. It has now been initialized, but pygame.init() should normally be called before instantiating any instances of the {self.__class__.__name__} class.")
-            pygame.init()
+        if not self._is_initialized:
+            #
+            # Make sure pygame is initialized. Normally, this is expected to be
+            # done before elements are created, so issue a warning if it had to
+            # be done here.
+            #
+            if not pygame.get_init():
+                print(f"WARNING: pygame was not initialized when a {self.__class__.__name__} object was instantiated. It has now been initialized, but pygame.init() should normally be called before instantiating any instances of the {self.__class__.__name__} class.")
+                pygame.init()
 
-        #
-        # Grab a local pointer to the singleton ControllerInput object so that
-        # it does not need to be re-created everytime the update() method is
-        # called.
-        #
-        self.controller_input = ControllerInput()
+            #
+            # Grab a local pointer to the singleton ControllerInput object so that
+            # it does not need to be re-created everytime the update() method is
+            # called.
+            #
+            self.controller_input = ControllerInput()
 
-        #
-        # Finally, initialize the base GameElement class items.
-        #
-        super().__init__(_PADDLE_IMAGE_FILE, x=x, y=y)
+            #
+            # Now, initialize the base GameElement class items.
+            #
+            super().__init__(_PADDLE_IMAGE_FILE, x=x, y=y)
+
+            #
+            # And set the self._is_initialized flag so later calls to get this
+            # singleton do not end up re-initializing the structures.
+            #
+            self._is_initialized = True
 
     @override
     def update(self, dt: int, screen: Surface = None, **kwargs):
@@ -79,5 +107,5 @@ class Paddle(GameElement):
         self.right = min(self.right, screen_rect.right)
 
     #
-    # The draw method of GameElement is used without modification
+    # The draw method of the base GameElement class is used without modification for the Paddle
     #
