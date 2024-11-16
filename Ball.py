@@ -38,7 +38,8 @@ from Paddle import Paddle
 _BALL_IMAGE_FILE="./images/football.png"
 _INITIAL_BALL_SPEED_PPM = 0.25
 _MAX_SERVE_ANGLE_DEGREES = 60
-_PADDLE_TO_BALL_VELOCITY_TRANSFER_RATIO = 0.10
+_PADDLE_TO_BALL_HORIZONTAL_VELOCITY_TRANSFER_RATIO = 0.10
+_SPEED_INCREASE_RATIO_AFTER_PADDLE_HIT = 1.01
 
 
 class Ball(GameElement):
@@ -156,11 +157,15 @@ class Ball(GameElement):
         # When the ball hits the top paddle, it reflects up. To keep the ball
         # from getting stuck on the paddle, don't simply invert y, actually
         # set it to be positive.
+        #
         # If the paddle is moving at the time of the hit, add some of the
         # velocity of the paddle to the ball. This provides some way to affect
         # the angle the ball is moving in. Note that not all the velocity
         # of the paddle is added because it can speed the ball up way to
         # much too quickly.
+        #
+        # Also, when the ball hits the paddle, it should speed up slightly.
+        # This makes the game harder as time goes on.
         #
         #  Paddle    Ball    Ball    Paddle
         #   Left     Left    Right   Right
@@ -176,7 +181,8 @@ class Ball(GameElement):
         #
         if self.colliderect(self._paddle) and self.top <= self._paddle.top:
             self.velocity.y = -abs(self.velocity.y)
-            self.velocity.x += _PADDLE_TO_BALL_VELOCITY_TRANSFER_RATIO * self._paddle.velocity.x
+            self.velocity.x += _PADDLE_TO_BALL_HORIZONTAL_VELOCITY_TRANSFER_RATIO * self._paddle.velocity.x
+            self.velocity.scale_to_length(self.velocity.length() * _SPEED_INCREASE_RATIO_AFTER_PADDLE_HIT)
 
         # Check for collisions with the sides and top of the screen
         if self.left < screen_rect.left:
