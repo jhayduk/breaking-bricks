@@ -301,12 +301,6 @@ while not game_over:
     for brick_location in brick_locations:
         screen.blit(brick, brick_location)
 
-    # Draw the bat
-    screen.blit(bat, bat_rect)
-
-    # Draw the ball
-    screen.blit(ball, ball_rect)
-
     # Draw the elements
     for element in elements:
         element.draw(screen)
