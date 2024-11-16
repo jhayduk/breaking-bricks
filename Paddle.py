@@ -1,9 +1,9 @@
 """
 Paddle
 
-The Paddle moves back and forth near the bottom of screen and is used to
-deflect the ball to both keep it in play and in an attempt to break the
-bricks by bouncing the ball into them.
+The Paddle is a GameElement moves back and forth near the bottom of screen and
+is used to deflect the ball to both keep it in play and in an attempt to break
+the bricks by bouncing the ball into them.
 
 The Paddle is a subclass of GameElement, which means it is updatable and
 drawable on the game screen.
@@ -15,10 +15,12 @@ The x and y positions are always defined in pixels and refer to the top left
 corner of the image. The x and y values are always relative to the top left
 corner of the game screen itself, which is defined to be at x=0, y=0.
 
-While the GameElement superclass contains a velocity value, this is not
-used by the Paddle class since the paddle does not maintain a velocity
-if no keys are pressed, or if the joystick is not being moved to the left
-or the right.
+The velocity is a Vector2 value in pixels per millisecond (ppm), with a unit
+vector pointing 1 ppm to the right and 1 ppm down (↘).
+
+For the paddle, the velocity is always only in the x direction. For moving
+the paddle itself, a velocity is not really needed. However, it is calculated
+and updated so that it can be transferred to the ball when the ball is hit.
 """
 import pygame
 from pygame import Surface
@@ -69,7 +71,7 @@ class Paddle(GameElement):
             # it does not need to be re-created everytime the update() method is
             # called.
             #
-            self.controller_input = ControllerInput()
+            self._controller_input = ControllerInput()
 
             #
             # Now, initialize the base GameElement class items.
@@ -85,7 +87,9 @@ class Paddle(GameElement):
     @override
     def update(self, dt: int, screen: Surface = None, **kwargs):
         """
-        :param dt:
+        :param dt: The number of milliseconds since the last call to update.
+                    This is used with any movement calculations to help
+                    smooth and jitter in the frame rate.
         :param screen: The screen the paddle will be drawn on. This is used to
                         make sure the paddle does not go off the screen and
                         MUST be supplied.
@@ -95,7 +99,8 @@ class Paddle(GameElement):
         # Check that required parameters have been supplied
         assert screen is not None , f"INTERNAL ERROR: A screen parameter MUST be supplied to the {self.__class__.__name__}.update() method"
 
-        self.x += (self.controller_input.get_horizontal_movement() * _MAX_PADDLE_SPEED_PPM) * dt
+        self.velocity.x = self._controller_input.paddle() * _MAX_PADDLE_SPEED_PPM
+        self.x += self.velocity.x * dt
 
         #
         # Check to make sure the updated position does not place any part of
