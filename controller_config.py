@@ -11,20 +11,17 @@ and is not intended to be used elsewhere.
 _button_mapping = {
     "default": {
         "name": "default - used if device guid is not in this table",
-        "enter": {"button": 0},
-        "trigger": {"button": 0},
-        "x": {"axis": 0}
+        "paddle": {"axis": 0, "name": "Axis 0"},
+        "serve": {"button": 0, "name": "Button 0"}
     },
     "0300e6365e0400003c00000001010000": {
         "name": "Microsoft SideWinder Joystick",
-        "enter": {"button": 0},
-        "trigger": {"button": 0},
-        "x": {"axis": 0}
+        "paddle": {"axis": 0, "name": "Joystick"},
+        "serve": {"button": 0, "name": "Trigger"}
     },
     "03008fe54c050000cc09000000016800": {
         "name": "PS4 Controller",
-        "enter": {"button": 0},
-        "trigger": {"axis": 5},
-        "x": {"axis": 2}
+        "paddle": {"axis": 2, "name": "R-Stick"},
+        "serve": {"button": 0, "name": "╳ button"}
     }
 }

@@ -8,6 +8,8 @@ being used.
 
 This class is a singleton so that it can be accessed from multiple locations
 without having to pass the single instance around everywhere.
+
+This class is specific for the breaking-bricks game.
 """
 import pygame
 
@@ -59,9 +61,50 @@ class ControllerInput:
                     print(f"    Number of hats: {joystick.get_numhats()}")
                     print(f"    Number of balls: {joystick.get_numballs()}")
 
+                    #
+                    # Check the validity of the config here so that later code
+                    # does not have to constantly do it.
+                    #
+                    guid = joystick.get_guid()
+                    known_guid = False
+                    if guid in _button_mapping:
+                        known_guid = True
+                        button_mapping = _button_mapping[guid]
+                    else:
+                        button_mapping = _button_mapping["default"]
+
+                    #
+                    # Pre-fill the start of an error message should an entry in the
+                    # controller file not be complete. This part records if the GUID
+                    # was found or not. It is expected that the message would be
+                    # added to before getting used in a raise RuntimeError() statement.
+                    #
+                    error_message = ""
+                    if known_guid:
+                        error_message += f'The joystick with the GUID "{guid}" has an entry in the controller_config.py file but it'
+                    else:
+                        error_message += f'The joystick with the GUID "{guid}" does not have an entry in controller_config.py file and the entry for the "default" GUID'
+
+                    if "paddle" not in button_mapping:
+                        error_message += ' does not have an "paddle" entry in it.'
+                        raise RuntimeError(error_message)
+
+                    # TODO - Allow for both axes and buttons on the joystick to move the paddle
+                    if "axis" not in button_mapping["paddle"]:
+                        error_message += ' does not have an "axis" entry in its "paddle" entry.'
+                        raise RuntimeError(error_message)
+
+                    if "serve" not in button_mapping:
+                        error_message += ' does not have an "serve" entry in it.'
+                        raise RuntimeError(error_message)
+
+                    if "button" not in button_mapping["serve"]:
+                        error_message += ' does not have an "button" entry in its "serve" entry.'
+                        raise RuntimeError(error_message)
+
             self._is_initialized = True
 
-    def get_horizontal_movement(self) -> float:
+    def paddle(self) -> float:
         """
         The amount that the keyboard or any connected joysticks are being
         moved in either the right or the left direction. Movement to the right
@@ -95,35 +138,11 @@ class ControllerInput:
         #
         for joystick in self._joysticks:
             guid = joystick.get_guid()
-            known_guid = False
             if guid in _button_mapping:
-                known_guid = True
                 button_mapping = _button_mapping[guid]
             else:
                 button_mapping = _button_mapping["default"]
-
-            #
-            # Pre-fill the start of an error message should an entry in the
-            # controller file not be complete. This part records if the GUID
-            # was found or not. It is expected that the message would be
-            # added to before getting used in a raise RuntimeError() statement.
-            #
-            error_message = ""
-            if known_guid:
-                error_message += f'The joystick with the GUID "{guid}" has an entry in the controller_config.py file but it'
-            else:
-                error_message += f'The joystick with the GUID "{guid}" does not have an entry in controller_config.py file and the entry for the "default" GUID'
-
-            if "x" not in button_mapping:
-                error_message += ' does not have an "x" entry in it.'
-                raise RuntimeError(error_message)
-
-            # TODO - Allow for both axes and buttons on the joystick to move the paddle
-            if "axis" not in button_mapping["x"]:
-                error_message += ' does not have an "axis" entry in its "x" entry.'
-                raise RuntimeError(error_message)
-
-            movement += joystick.get_axis(button_mapping["x"]["axis"])
+            movement += joystick.get_axis(button_mapping["paddle"]["axis"])
 
         #
         # Finally, clip the resulting movement value so that is in the range [-1.0, 1.0],
@@ -132,6 +151,28 @@ class ControllerInput:
         movement = max(-1.0, min(1.0, movement))
 
         return movement
+
+    def serve(self) -> bool:
+        """
+        Returns True if any of the buttons mapped to "serve" are being pressed
+        at the time this is called, and False otherwise.
+        """
+        # Keyboard
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            return True
+
+        # Joysticks
+        for joystick in self._joysticks:
+            guid = joystick.get_guid()
+            if guid in _button_mapping:
+                button_mapping = _button_mapping[guid]
+            else:
+                button_mapping = _button_mapping["default"]
+            if abs(joystick.get_button(button_mapping["serve"]["button"])) > 0.5:
+                return True
+
+        return False
 
     def show_current_state(self, screen: pygame.Surface):
         """
