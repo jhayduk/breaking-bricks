@@ -15,6 +15,7 @@ import argparse
 import pygame
 import random
 
+from Ball import Ball
 from ControllerInput import ControllerInput
 from Paddle import Paddle
 
@@ -61,6 +62,10 @@ elements = []
 paddle = Paddle(x=0, y=screen.get_height() - 100)
 elements.append(paddle)
 
+# ball
+ball = Ball(x=screen.get_rect().centerx, y=screen.get_rect().centery, paddle=paddle)
+elements.append(ball)
+
 #
 # Set up resources
 #
@@ -90,6 +95,7 @@ current_ball_speed_ppm = initial_ball_speed_ppm
 # the space bar.
 ball_served = False
 ball_rect.center = ball_start_center
+ball_rect.left = screen.get_rect().left
 
 # bricks
 brick = pygame.image.load("./images/brick.png")
@@ -137,12 +143,14 @@ while not game_over:
 
     keys = pygame.key.get_pressed()
 
+    # -v JWH - This will eventually come out
     # TODO: Check for joystick start selected as well.
-    if (keys[pygame.K_SPACE]) and not ball_served:
-        ball_served = True
-        current_ball_speed_ppm = initial_ball_speed_ppm
-        # Randomize in which x direction the ball will be served.
-        current_ball_speed_ppm = (current_ball_speed_ppm[0] * random.uniform(-1.0, 1.0), current_ball_speed_ppm[1])
+    # if (keys[pygame.K_SPACE]) and not ball_served:
+    #     ball_served = True
+    #     current_ball_speed_ppm = initial_ball_speed_ppm
+    #     # Randomize in which x direction the ball will be served.
+    #     current_ball_speed_ppm = (current_ball_speed_ppm[0] * random.uniform(-1.0, 1.0), current_ball_speed_ppm[1])
+    # -^ JWH - This will eventually come out
 
     # Update the ball
     bat_hit_the_ball = False

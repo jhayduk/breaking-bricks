@@ -85,7 +85,9 @@ class GameElement(pygame.Rect):
         Warning: If overridden, this method should be overridden completely.
                     (i.e. do NOT use super().update())
 
-        :param dt: The time delta in milliseconds since the last update.
+        :param dt: The number of milliseconds since the last call to update.
+                    This is used with any movement calculations to help
+                    smooth and jitter in the frame rate.
         :param events: A list of the pygame events detected since the last
                         frame. Not all elements care about events, so this
                         is optional and defaults None if omitted. When
@@ -100,8 +102,7 @@ class GameElement(pygame.Rect):
                         MUST be taken into account if it is used.
 
         """
-        self.x += self.velocity.x * dt
-        self.y += self.velocity.y * dt
+        self.move_ip(self.velocity.x * dt, self.velocity.y * dt)
 
     def draw(self, screen: Surface):
         """
