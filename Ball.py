@@ -97,6 +97,10 @@ class Ball(GameElement):
         #
         super().__init__(_BALL_IMAGE_FILE, x=x, y=y, velocity=Vector2(0, 0))
 
+    #
+    # GameElement's draw() method is sufficient for Ball objects, so that is NOT overridden
+    #
+
     @override
     def update(self, dt: int, screen: Surface = None, **kwargs):
         """

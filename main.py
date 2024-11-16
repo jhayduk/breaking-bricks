@@ -16,6 +16,7 @@ import pygame
 import random
 
 from Ball import Ball
+from Brick import Brick
 from ControllerInput import ControllerInput
 from Paddle import Paddle
 
@@ -58,16 +59,63 @@ controller_input = ControllerInput()
 #
 elements = []
 
+# -------
 # paddle
+# -------
 paddle = Paddle(x=0, y=screen.get_height() - 100)
 elements.append(paddle)
 
+# -------
+# bricks
+# -------
+
+#
+# The bricks are all assumed to be the same size, so the code creates one just
+# to get the dimensions and then the brick is released.
+#
+sample_brick = Brick()
+brick_gap = int(sample_brick.width * 0.10)
+brick_rows = 5
+brick_cols = screen.get_width() // (sample_brick.width + brick_gap)
+
+#
+# To even out the gap on the sides of the screen, the x gap on the last
+# brick displayed needs to be ignored because it, effectively, is not part
+# of the width of the set of blocks that are displayed. So, there is one
+# less x gap than there are columns.
+#
+# To make things look somewhat symmetric and extra gap at the top of the
+# set of bricks is added.
+#
+gapped_row_height = sample_brick.height + brick_gap
+gapped_brick_width = sample_brick.width + brick_gap
+block_set_width = (gapped_brick_width * brick_cols) - brick_gap
+side_gap = (screen.get_width() - block_set_width) // 2
+top_gap = side_gap
+
+#
+# With the calculations out of the way, release the sample_brick
+# and create the set of bricks. These are saved in both the bricks
+# list and the elements list.
+#
+del sample_brick
+bricks = []
+for row in range(brick_rows):
+    brick_y = top_gap + (row * gapped_row_height)
+    for col in range(brick_cols):
+        brick_x = side_gap + (col * gapped_brick_width)
+        new_brick = Brick(x=brick_x, y=brick_y)
+        elements.append(new_brick)
+        bricks.append(new_brick)
+
+# -----
 # ball
+# -----
 ball = Ball(x=screen.get_rect().centerx, y=screen.get_rect().centery, paddle=paddle)
 elements.append(ball)
 
 #
-# Set up resources
+# TODO: The old way - remove - Set up resources
 #
 
 # bat
@@ -97,7 +145,8 @@ ball_served = False
 ball_rect.center = ball_start_center
 ball_rect.left = screen.get_rect().left
 
-# bricks
+
+# bricks - the old way
 brick = pygame.image.load("./images/brick.png")
 brick.convert_alpha()
 brick_rect = brick.get_rect()
@@ -115,7 +164,7 @@ gapped_brick_width = brick_rect.width + brick_gap_x
 block_set_width = (gapped_brick_width * brick_cols) - brick_gap_x
 side_gap = (screen.get_width() - block_set_width) // 2
 for row in range(brick_rows):
-    brick_y = row * gapped_row_height
+    brick_y = brick_gap_y + (row * gapped_row_height)
     for col in range(brick_cols):
         brick_x = side_gap + (col * gapped_brick_width)
         brick_locations.append((brick_x, brick_y))
@@ -297,9 +346,10 @@ while not game_over:
     for element in elements:
         element.update(dt=dt, events=all_events, screen=screen)
 
-    # Draw the bricks
-    for brick_location in brick_locations:
-        screen.blit(brick, brick_location)
+    # TODO: This is the old way and should come out
+    # # Draw the bricks
+    # for brick_location in brick_locations:
+    #     screen.blit(brick, brick_location)
 
     # Draw the elements
     for element in elements:
