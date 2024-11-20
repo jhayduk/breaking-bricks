@@ -19,7 +19,8 @@ As a subclass of GameElement, a Brick also has a velocity. However, bricks do
 not move, so the velocity is always (0, 0) and does not change.
 """
 import pygame
-from pygame import Vector2
+from pygame import Vector2, Surface
+import sys
 from typing import override
 
 from GameElement import GameElement
@@ -27,6 +28,15 @@ from GameElement import GameElement
 _BRICK_IMAGE_FILE="./images/brick.png"
 
 class Brick(GameElement):
+
+    was_hit = False
+    """
+    This becomes set to True if this brick has been hit by the ball.
+    This value should not be written by any other code, but should be read to
+    see if references to this object should be dropped so that the brick
+    is no longer displayed and the memory used by this object can be freed.
+    """
+
     def __init__(self, x: int = 0, y: int = 0):
         """
         Other than making sure pygame has been initialized and supplying
@@ -50,6 +60,17 @@ class Brick(GameElement):
         # to be explicit and to guarantee that it is not moving when created.
         #
         super().__init__(_BRICK_IMAGE_FILE, x=x, y=y, velocity=Vector2(0, 0))
+
+    @override
+    def collided_with(self, other_element: GameElement):
+        """
+        Because of how the game is constructed, the only object that can
+        collide with a brick is the ball. In the game, shen that happens,
+        the brick should disappear. In this code, Set the was_hit attribute so
+        that the main game loop can drop the reference to this object so it
+        can be deleted and no longer displayed.
+        """
+        self.was_hit = True
 
     #
     # GameElement's draw() method is sufficient for Brick objects, so that is NOT overridden

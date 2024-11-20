@@ -78,6 +78,26 @@ class GameElement(pygame.Rect):
         # Initialize the velocity
         self.velocity = velocity
 
+    def collided_with(self, other_element: 'GameElement'):
+        """
+        When two objects collide with each other, they both can be affected.
+
+        This method should be called whenever collisions occur.
+
+        The "other_element" is what collided with the self instance.
+
+        Override this method if the self object should be affected by
+        collisions and use it to update the self instance only. Do not update
+        the "other_instance". If the "other_instance" is also affected by the
+        collision, its collided_with() method is the one that is responsible
+        for updating that object.
+
+        :param other_element: The GameElement object that collided with this
+                                GameElement.
+        """
+        # TODO: Provide some generic reaction to collisions
+        pass
+
     def update(self, dt: int, events: list[Event] = None, screen: Surface = None):
         """
         Update the position of the GameElement based on its velocity and the time delta.

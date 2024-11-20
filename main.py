@@ -346,10 +346,29 @@ while not game_over:
     for element in elements:
         element.update(dt=dt, events=all_events, screen=screen)
 
-    # TODO: This is the old way and should come out
-    # # Draw the bricks
-    # for brick_location in brick_locations:
-    #     screen.blit(brick, brick_location)
+    # Check for and handle collisions between objects
+    for element in elements:
+        other_elements = [e for e in elements if e is not element]
+        elements_collided_with_indexes = element.collidelistall(other_elements)
+        for element_collided_with_index in elements_collided_with_indexes:
+            element.collided_with(other_elements[element_collided_with_index])
+
+    #
+    # Remove any bricks that were hit
+    #
+    # Note that clearing the bricks_to_delete is not technically needed
+    # because it will get cleared on the next iteration. However, it feels
+    # cleaner to explicitly free the last references to the now deleted bricks
+    # rather than let it happen in the future as a side effect.
+    #
+    bricks_to_delete = []
+    for brick in bricks:
+        if brick.was_hit:
+            bricks_to_delete.append(brick)
+    for brick in bricks_to_delete:
+        bricks.remove(brick)
+        elements.remove(brick)
+    bricks_to_delete = []
 
     # Draw the elements
     for element in elements:
