@@ -131,31 +131,11 @@ class Ball(GameElement):
         """
         # x direction
         if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
-            self.velocity = self.velocity.elementwise() * Vector2(-math.copysign(1, self.velocity.x), 1)
+            self.velocity = self.velocity.elementwise() * Vector2(-1, 1)
 
         # y direction
         if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
-            self.velocity = self.velocity.elementwise() * Vector2(1, -math.copysign(1, self.velocity.y))
-
-        # #
-        # # Reflect the velocity in th
-        # #
-        # # First, calculate the reflection without changing anything
-        # #
-        # # The reason for not changing during the calculation is that if it is
-        # # moved along one axis before checking the other can affect the detection in
-        # # the second axis (specifically, it affects the "contains" state.
-        # #
-        # reflection_factor = Vector2(1, 1)
-        # # y - direction
-        # if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
-        #     reflection_factor.y = -math.copysign(1, self.velocity.y)
-        # # x - direction
-        # if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
-        #     reflection_factor.x = -math.copysign(1, self.velocity.x)
-        #
-        # # Now apply the reflection
-        # self.velocity = self.velocity.elementwise() * reflection_factor
+            self.velocity = self.velocity.elementwise() * Vector2(1, -1)
 
         # Transfer a small amount of the x velocity of the other_object to the ball.
         self.velocity.x += _PADDLE_TO_BALL_HORIZONTAL_VELOCITY_TRANSFER_RATIO * other_element.velocity.x
