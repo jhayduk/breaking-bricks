@@ -13,7 +13,6 @@ python main.py
 """
 import argparse
 import pygame
-import random
 
 from Ball import Ball
 from Brick import Brick
