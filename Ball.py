@@ -164,38 +164,32 @@ class Ball(GameElement):
     def collided_with(self, other_element: GameElement):
         """
         The ball can collide with the paddle, or one (or more) of the bricks.
-        The reaction is always the same. The ball will reflect in the
-        direction of the edge that was collided with, and the ball will gain
-        a portion of the x velocity of the object it collided with. Since
-        bricks are stationary, this means that only the paddle will modify
-        the x velocity of the ball.
+        The reaction is always the same. The ball will bounce away from the
+        edge(s) that it just hit. Additionally, the ball will gain a portion
+        of the horizontal velocity of the paddle if it collides with it.
+        As a simplification, since bricks are stationary, the code will
+        add a portion of the horizontal velocity of anything that the ball
+        hits.
 
-        Everytime the ball hits an object, it speeds up slightly. This makes
-        the game more challenging as time goes on.
-
-        There are 9 possible collision situations for where self intersects
-        other_element:
-
-            1. Top left corner only (x and y components)
-            2. Top edge only (y component only)
-            3. Top right corner only (x and y components)
-            4. Left side only (x component only)
-            5. Completely enclosed (special case)
-            6. Right side only (x component only)
-            7. Bottom left corner (x and y components)
-            8. Bottom edge only (y component only
-            9. Bottom right corner (x and y components)
-
-        With these in mind, all reflections in the x direction can be handled
-        together, and all reflections in the y direction can be handled together.
+        Also, everytime the ball hits an object, any object, it speeds up
+        slightly. This makes the game more challenging as time goes on.
         """
-        # x direction
-        if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
-            self.velocity = self.velocity.elementwise() * Vector2(-1, 1)
-
-        # y direction
-        if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
-            self.velocity = self.velocity.elementwise() * Vector2(1, -1)
+        # Completely enclosed
+        if other_element.contains(self):
+            self.velocity.y = abs(self.velocity.y)
+        else:
+            # bottom
+            if self.bottom > other_element.bottom:
+                self.velocity.y = abs(self.velocity.y)
+            # top
+            elif self.top < other_element.top:
+                self.velocity.y = -abs(self.velocity.y)
+            # right
+            if self.right > other_element.right:
+                self.velocity.x = abs(self.velocity.x)
+            # left
+            elif self.left < other_element.left:
+                self.velocity.x = -abs(self.velocity.x)
 
         # Transfer a small amount of the x velocity of the other_object to the ball.
         self.velocity.x += _PADDLE_TO_BALL_HORIZONTAL_VELOCITY_TRANSFER_RATIO * other_element.velocity.x
