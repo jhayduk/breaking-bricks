@@ -111,6 +111,14 @@ class Paddle(GameElement):
         self.left = max(self.left, screen_rect.left)
         self.right = min(self.right, screen_rect.right)
 
+    @override
+    def collided_with(self, other_element: GameElement):
+        """
+        The paddle itself does not react to being collided with, so anything
+        that the generic GameElement method might do is bypassed.
+        """
+        pass
+
     #
     # The draw method of the base GameElement class is used without modification for the Paddle
     #

@@ -62,10 +62,19 @@ class Brick(GameElement):
         super().__init__(_BRICK_IMAGE_FILE, x=x, y=y, velocity=Vector2(0, 0))
 
     @override
+    def update(self, *args, **kargs):
+        """
+        Because a Brick never moves, there is nothing to update. Intentionally
+        override the update method with an empty method to avoid wasting time
+        with the calculations made by GameElement.update().
+        """
+        pass
+
+    @override
     def collided_with(self, other_element: GameElement):
         """
         Because of how the game is constructed, the only object that can
-        collide with a brick is the ball. In the game, shen that happens,
+        collide with a brick is the ball. In the game, when that happens,
         the brick should disappear. In this code, Set the was_hit attribute so
         that the main game loop can drop the reference to this object so it
         can be deleted and no longer displayed.
@@ -75,12 +84,3 @@ class Brick(GameElement):
     #
     # GameElement's draw() method is sufficient for Brick objects, so that is NOT overridden
     #
-
-    @override
-    def update(self, *args, **kargs):
-        """
-        Because a Brick never moves, there is nothing to update. Intentionally
-        override the update method with an empty method to avoid wasting time
-        with the calculations made by GameElement.update().
-        """
-        pass

@@ -98,66 +98,6 @@ class Ball(GameElement):
         #
         super().__init__(_BALL_IMAGE_FILE, x=x, y=y, velocity=Vector2(0, 0))
 
-
-    # TODO: After main loop removal of hit bricks, work on the _Ball_ collided_with() method. That is what deflects the ball on a hit.
-    @override
-    def collided_with(self, other_element: GameElement):
-        """
-        The ball can collide with the paddle, or one (or more) of the bricks.
-        The reaction is always the same. The ball will reflect in the
-        direction of the edge that was collided with, and the ball will gain
-        a portion of the x velocity of the object it collided with. Since
-        bricks are stationary, this means that only the paddle will modify
-        the x velocity of the ball.
-
-        Everytime the ball hits an object, it speeds up slightly. This makes
-        the game more challenging as time goes on.
-
-        There are 9 possible collision situations for where self intersects
-        other_element:
-
-            1. Top left corner only (x and y components)
-            2. Top edge only (y component only)
-            3. Top right corner only (x and y components)
-            4. Left side only (x component only)
-            5. Completely enclosed (special case)
-            6. Right side only (x component only)
-            7. Bottom left corner (x and y components)
-            8. Bottom edge only (y component only
-            9. Bottom right corner (x and y components)
-
-        With these in mind, all reflections in the x direction can be handled
-        together, and all reflections in the y direction can be handled together.
-        """
-        # x direction
-        if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
-            self.velocity = self.velocity.elementwise() * Vector2(-1, 1)
-
-        # y direction
-        if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
-            self.velocity = self.velocity.elementwise() * Vector2(1, -1)
-
-        # Transfer a small amount of the x velocity of the other_object to the ball.
-        self.velocity.x += _PADDLE_TO_BALL_HORIZONTAL_VELOCITY_TRANSFER_RATIO * other_element.velocity.x
-
-        # Speed up the ball slightly
-        self.velocity.scale_to_length(self.velocity.length() * _SPEED_INCREASE_RATIO_AFTER_OBJECT_HIT)
-
-        #
-        # Lastly, if the y velocity should ever be nearly 0,
-        # it could be impossible for the ball to move. If, somehow,
-        # is condition were to occur, raise the velocity to the
-        # minimum amount in the direction of motion or down, if there
-        # is exactly 0 velocity in the y direction.
-        #
-        if -_MINIMUM_BALL_Y_VELOCITY_PPM < self.velocity.y < _MINIMUM_BALL_Y_VELOCITY_PPM:
-            self.velocity.y = -_MINIMUM_BALL_Y_VELOCITY_PPM if self.velocity.y < 0 else _MINIMUM_BALL_Y_VELOCITY_PPM
-        # TODO - Except for the speed up, these reflection calculations are generic for an elastic self colliding with an immovable other_element
-
-    #
-    # GameElement's draw() method is sufficient for Ball objects, so that is NOT overridden
-    #
-
     @override
     def update(self, dt: int, screen: Surface = None, **kwargs):
         """
@@ -219,3 +159,61 @@ class Ball(GameElement):
             self.velocity.x = -abs(self.velocity.x)
         if self.top < screen_rect.top:
             self.velocity.y = abs(self.velocity.y)
+
+    @override
+    def collided_with(self, other_element: GameElement):
+        """
+        The ball can collide with the paddle, or one (or more) of the bricks.
+        The reaction is always the same. The ball will reflect in the
+        direction of the edge that was collided with, and the ball will gain
+        a portion of the x velocity of the object it collided with. Since
+        bricks are stationary, this means that only the paddle will modify
+        the x velocity of the ball.
+
+        Everytime the ball hits an object, it speeds up slightly. This makes
+        the game more challenging as time goes on.
+
+        There are 9 possible collision situations for where self intersects
+        other_element:
+
+            1. Top left corner only (x and y components)
+            2. Top edge only (y component only)
+            3. Top right corner only (x and y components)
+            4. Left side only (x component only)
+            5. Completely enclosed (special case)
+            6. Right side only (x component only)
+            7. Bottom left corner (x and y components)
+            8. Bottom edge only (y component only
+            9. Bottom right corner (x and y components)
+
+        With these in mind, all reflections in the x direction can be handled
+        together, and all reflections in the y direction can be handled together.
+        """
+        # x direction
+        if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
+            self.velocity = self.velocity.elementwise() * Vector2(-1, 1)
+
+        # y direction
+        if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
+            self.velocity = self.velocity.elementwise() * Vector2(1, -1)
+
+        # Transfer a small amount of the x velocity of the other_object to the ball.
+        self.velocity.x += _PADDLE_TO_BALL_HORIZONTAL_VELOCITY_TRANSFER_RATIO * other_element.velocity.x
+
+        # Speed up the ball slightly
+        self.velocity.scale_to_length(self.velocity.length() * _SPEED_INCREASE_RATIO_AFTER_OBJECT_HIT)
+
+        #
+        # Lastly, if the y velocity should ever be nearly 0,
+        # it could be impossible for the ball to move. If, somehow,
+        # is condition were to occur, raise the velocity to the
+        # minimum amount in the direction of motion or down, if there
+        # is exactly 0 velocity in the y direction.
+        #
+        if -_MINIMUM_BALL_Y_VELOCITY_PPM < self.velocity.y < _MINIMUM_BALL_Y_VELOCITY_PPM:
+            self.velocity.y = -_MINIMUM_BALL_Y_VELOCITY_PPM if self.velocity.y < 0 else _MINIMUM_BALL_Y_VELOCITY_PPM
+        # TODO - Except for the speed up, these reflection calculations are generic for an elastic self colliding with an immovable other_element
+
+    #
+    # GameElement's draw() method is sufficient for Ball objects, so that is NOT overridden
+    #
