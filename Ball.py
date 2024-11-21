@@ -113,12 +113,8 @@ class Ball(GameElement):
         Everytime the ball hits an object, it speeds up slightly. This makes
         the game more challenging as time goes on.
 
-        To avoid the ball getting "stuck" on a surface, move it so that the
-        edge that hit is one pixel from colliding. This will give the
-        appearance of the ball hitting without risking getting stuck.
-
         There are 9 possible collision situations for where self intersects
-        other_element.
+        other_element:
 
             1. Top left corner only (x and y components)
             2. Top edge only (y component only)
@@ -128,49 +124,44 @@ class Ball(GameElement):
             6. Right side only (x component only)
             7. Bottom left corner (x and y components)
             8. Bottom edge only (y component only
-            9. (x and y components)
-        """
-        #
-        # First, calculate the reflection without changing anything yet
-        #
-        # The reason for not changing during the calculation is that it moving
-        # in on axis before checking the other can affect the detection in
-        # the second axis (specifically, it affects the "contains" state.
-        #
-        reflection_factor = Vector2(1, 1)
-        # y - direction
-        if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
-            reflection_factor.y = -math.copysign(1, self.velocity.y)
-        # x - direction
-        if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
-            reflection_factor.x = -math.copysign(1, self.velocity.x)
+            9. Bottom right corner (x and y components)
 
-        # Now apply the reflection
-        self.velocity = self.velocity.elementwise() * reflection_factor
+        With these in mind, all reflections in the x direction can be handled
+        together, and all reflections in the y direction can be handled together.
+        """
+        # x direction
+        if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
+            self.velocity = self.velocity.elementwise() * Vector2(-math.copysign(1, self.velocity.x), 1)
+
+        # y direction
+        if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
+            self.velocity = self.velocity.elementwise() * Vector2(1, -math.copysign(1, self.velocity.y))
+
+        # #
+        # # Reflect the velocity in th
+        # #
+        # # First, calculate the reflection without changing anything
+        # #
+        # # The reason for not changing during the calculation is that if it is
+        # # moved along one axis before checking the other can affect the detection in
+        # # the second axis (specifically, it affects the "contains" state.
+        # #
+        # reflection_factor = Vector2(1, 1)
+        # # y - direction
+        # if self.top <= other_element.top or other_element.contains(self) or self.bottom >= other_element.bottom:
+        #     reflection_factor.y = -math.copysign(1, self.velocity.y)
+        # # x - direction
+        # if self.left <= other_element.left or other_element.contains(self) or self.right >= other_element.right:
+        #     reflection_factor.x = -math.copysign(1, self.velocity.x)
+        #
+        # # Now apply the reflection
+        # self.velocity = self.velocity.elementwise() * reflection_factor
 
         # Transfer a small amount of the x velocity of the other_object to the ball.
         self.velocity.x += _PADDLE_TO_BALL_HORIZONTAL_VELOCITY_TRANSFER_RATIO * other_element.velocity.x
 
         # Speed up the ball slightly
         self.velocity.scale_to_length(self.velocity.length() * _SPEED_INCREASE_RATIO_AFTER_OBJECT_HIT)
-
-        #
-        # Move the ball to the edge(s) of the other_object in the direction(s)
-        # the ball was reflected to. The reflection factor will be (nearly) -1
-        # for any coordinate that was reflected, and the resultant movement
-        # direction will reveal what edge the ball should be put _next_ to.
-        #
-        # top
-        if reflection_factor.y < -0.5 and self.velocity.y <= 0:
-            self.bottom = other_element.top - 1
-        # bottom
-        elif reflection_factor.y < -0.5 and self.velocity.y > 0:
-            self.top = other_element.bottom + 1
-        # left
-        if reflection_factor.x < -0.5 and self.velocity.x <= 0:
-            self.right = other_element.left - 1
-        elif reflection_factor.x < -0.5 and self.velocity.x > 0:
-            self.left = other_element.right + 1
 
         #
         # Lastly, if the y velocity should ever be nearly 0,
@@ -181,7 +172,6 @@ class Ball(GameElement):
         #
         if -_MINIMUM_BALL_Y_VELOCITY_PPM < self.velocity.y < _MINIMUM_BALL_Y_VELOCITY_PPM:
             self.velocity.y = -_MINIMUM_BALL_Y_VELOCITY_PPM if self.velocity.y < 0 else _MINIMUM_BALL_Y_VELOCITY_PPM
-
         # TODO - Except for the speed up, these reflection calculations are generic for an elastic self colliding with an immovable other_element
 
     #
