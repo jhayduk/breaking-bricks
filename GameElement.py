@@ -39,17 +39,26 @@ from pygame.math import Vector2
 
 
 class GameElement(pygame.Rect):
-    #
-    # The current velocity of this element on the screen in pixels per millisecond
-    # The positive direction of a velocity vector is to the right and down (↘)
-    #
+
     velocity: Vector2
+    """
+    The current velocity of this element on the screen in pixels per
+    millisecond. The positive direction of a velocity vector is to the right
+    and down (↘).
+    """
+
+    collidable: bool
+    """
+    True if this element can be collided with and, therefore, should
+    participate in collision detection calculations.
+    """
 
     def __init__(self,
                  image_file: str,
                  x: int = 0,
                  y: int = 0,
-                 velocity: Vector2 = Vector2(0, 0)):
+                 velocity: Vector2 = Vector2(0, 0),
+                 collidable: bool = True):
         """
         :param image_file: The name of the file, including the relative path
                     to the file that contains the image to be displayed for
@@ -64,6 +73,11 @@ class GameElement(pygame.Rect):
         :param velocity: The initial velocity, in pixels per millisecond,
                     of the element. The unit vector points to the right and
                     down.
+        :param collidable: If True (the default) the element can be collided
+                            with and should participate in collision detection
+                            calculations. Set this to False for background
+                            elements or anything that other elements can
+                            pass through without hitting anything.
 
         TODO: Add support for cropping a single image out of a sprite sheet.
         """
@@ -83,8 +97,9 @@ class GameElement(pygame.Rect):
         # Initialize the Rect with the size of the image
         super().__init__(x, y, image_rect.width, image_rect.height)
 
-        # Initialize the velocity
+        # Initialize other passed in settings
         self.velocity = velocity
+        self.collidable = collidable
 
     def update(self, dt: int, events: list[Event] = None, screen: Surface = None):
         """

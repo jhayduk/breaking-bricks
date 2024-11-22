@@ -140,8 +140,8 @@ while not game_over:
         element.update(dt=dt, events=all_events, screen=screen)
 
     # Check for and handle collisions between objects
-    for element in elements:
-        other_elements = [e for e in elements if e is not element]
+    for element in [e for e in elements if e.collidable]:
+        other_elements = [e for e in elements if e is not element and e.collidable]
         elements_collided_with_indexes = element.collidelistall(other_elements)
         for element_collided_with_index in elements_collided_with_indexes:
             element.collided_with(other_elements[element_collided_with_index])
