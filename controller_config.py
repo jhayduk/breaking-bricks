@@ -21,7 +21,7 @@ _button_mapping = {
     },
     "03008fe54c050000cc09000000016800": {
         "name": "PS4 Controller",
-        "paddle": {"axis": 2, "name": "R-Stick"},
+        "paddle": {"axis": 0, "name": "L-Stick"},
         "serve": {"button": 0, "name": "╳ button"}
     }
 }
