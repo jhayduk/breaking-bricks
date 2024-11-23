@@ -1,33 +1,3 @@
-"""
-GameElement
-
-A GameElement is an updatable and drawable entity. It is a subclass of Rect,
-so it has x and y positions (as well as the topleft, bottom, etc. variables
-that Rect objects have). It also has an image (instantiated with a filename),
-and a velocity in 2D space.
-
-The x and y positions are always defined in pixels and refer to the top left
-corner of the image. The x and y values are always relative to the top left
-corner of the game screen itself, which is defined to be at x=0, y=0.
-
-The velocity is a Vector2 value in pixels per millisecond (ppm), with a unit
-vector pointing 1 ppm to the right and 1 ppm down (↘).
-
-The image file is expected to contain a single loadable image that can be
-drawn on the pygame screen. A single image can be selected from a sprite sheet
-of multiple images by using optional cropping parameters when instantiating
-the object
-
-While not required, it is expected that the update, collided_with, and draw
-methods are called once per frame, in the following order:
-
-  1. update
-  2. collided_with
-  3. draw
-
-All of these methods are normally overridden in subclasses of this class,
-but this class' version can be used for simple elements.
-"""
 import pygame
 from pygame import Surface
 from pygame.event import Event
@@ -35,20 +5,49 @@ from pygame.math import Vector2
 
 
 class GameElement(pygame.Rect):
+    """
+    A GameElement is an updatable and drawable entity. It is a subclass of Rect,
+    so it has x and y positions (as well as the topleft, bottom, etc. variables
+    that Rect objects have). It also has an image (instantiated with a filename),
+    and a velocity in 2D space.
 
-    velocity: Vector2
-    """
-    The current velocity of this element on the screen in pixels per
-    millisecond. The positive direction of a velocity vector is to the right
-    and down (↘).
-    """
+    Public Methods (in addition to those inherited from Rect):
 
-    collidable: bool
-    """
-    True if this element can be collided with and, therefore, should
-    participate in collision detection calculations.
-    """
+        update(dt, events, screen)
+        collided_with(other_element)
+        draw(screen)
 
+    Public Instance Variables (in addition to those inherited from Rect):
+
+        velocity - The current velocity of this element on the screen in pixels
+                    per millisecond. The positive direction of a velocity
+                    vector is to the right and down (↘).
+
+        collidable - True if this element can be collided with and, therefore,
+                        should participate in collision detection calculations.
+
+    The x and y positions are always defined in pixels and refer to the top left
+    corner of the image. The x and y values are always relative to the top left
+    corner of the game screen itself, which is defined to be at x=0, y=0.
+
+    The velocity is a Vector2 value in pixels per millisecond (ppm), with a unit
+    vector pointing 1 ppm to the right and 1 ppm down (↘).
+
+    The image file is expected to contain a single loadable image that can be
+    drawn on the pygame screen. A single image can be selected from a sprite sheet
+    of multiple images by using optional cropping parameters when instantiating
+    the object
+
+    While not required, it is expected that the update, collided_with, and draw
+    methods are called once per frame, in the following order:
+
+      1. update
+      2. collided_with
+      3. draw
+
+    All of these methods are normally overridden in subclasses of this class,
+    but this class' version can be used for simple elements.
+    """
     def __init__(self,
                  image_file: str,
                  x: int = 0,
