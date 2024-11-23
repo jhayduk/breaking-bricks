@@ -18,19 +18,15 @@ drawn on the pygame screen. A single image can be selected from a sprite sheet
 of multiple images by using optional cropping parameters when instantiating
 the object
 
-While not required, it is expected that the update and draw method are called
-once per frame, and that update is called before draw each time.
-
-Both update and draw are normally overridden in subclasses of GameElement,
-but this class' version can be used for simple elements.
-
-Note that, once initialized, the typical calling sequence in the main game loop
-is the following and is done once per frame:
+While not required, it is expected that the update, collided_with, and draw
+methods are called once per frame, in the following order:
 
   1. update
   2. collided_with
   3. draw
 
+All of these methods are normally overridden in subclasses of this class,
+but this class' version can be used for simple elements.
 """
 import pygame
 from pygame import Surface
