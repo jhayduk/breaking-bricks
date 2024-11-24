@@ -19,8 +19,7 @@ As a subclass of GameElement, a Brick also has a velocity. However, bricks do
 not move, so the velocity is always (0, 0) and does not change.
 """
 import pygame
-from pygame import Vector2, Surface
-import sys
+from pygame import Vector2
 from typing import override
 
 from GameElement import GameElement
