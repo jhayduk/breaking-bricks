@@ -18,6 +18,7 @@ from Ball import Ball
 from Brick import Brick
 from ControllerInput import ControllerInput
 from Paddle import Paddle
+import score
 
 #
 # Parse any arguments passed in
@@ -118,6 +119,7 @@ elements.append(ball)
 #
 clock = pygame.time.Clock()
 game_over = False
+previous_brick_count = len(bricks)
 while not game_over:
     dt = clock.tick(fps)
 
@@ -162,6 +164,17 @@ while not game_over:
         bricks.remove(brick)
         elements.remove(brick)
     bricks_to_delete = []
+
+    #
+    # Check if there are _now_ no more bricks, which means that the screen was
+    # cleared in this frame.
+    #
+    if len(bricks) == 0 and previous_brick_count != 0:
+        score.screen_cleared(ball.velocity)
+    previous_brick_count = len(bricks)
+
+    # Draw the scoreboard items
+    score.draw(screen)
 
     # Draw the elements
     for element in elements:

@@ -23,8 +23,10 @@ from pygame import Vector2
 from typing import override
 
 from GameElement import GameElement
+import score
 
 _BRICK_IMAGE_FILE="./images/brick.png"
+
 
 class Brick(GameElement):
 
@@ -60,6 +62,11 @@ class Brick(GameElement):
         #
         super().__init__(_BRICK_IMAGE_FILE, x=x, y=y, velocity=Vector2(0, 0))
 
+        #
+        # Right now, all bricks have the same base value
+        #
+        self._base_value = 1
+
     @override
     def update(self, *args, **kargs):
         """
@@ -79,6 +86,8 @@ class Brick(GameElement):
         can be deleted and no longer displayed.
         """
         self.was_hit = True
+
+        score.brick_destroyed( self._base_value, other_element.velocity)
 
     #
     # GameElement's draw() method is sufficient for Brick objects, so that is NOT overridden
