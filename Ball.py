@@ -74,7 +74,9 @@ class Ball(GameElement):
         #
         self._controller_input = ControllerInput()
 
+        #
         # Save off the paddle pointer for use in collision detection
+        #
         self._paddle = paddle
 
         #
@@ -101,6 +103,10 @@ class Ball(GameElement):
     @override
     def update(self, dt: int, screen: Surface = None, **kwargs):
         """
+        Update the position of the ball and check for collisions or if it has
+        gone off the bottom of the screen. If the ball has not yet started
+        moving, check to see if it is being served in this frame.
+
         :param dt: The number of milliseconds since the last call to update.
                     This is used with any movement calculations to help
                     smooth and jitter in the frame rate.
@@ -126,13 +132,14 @@ class Ball(GameElement):
                 self.velocity = Vector2(0.0, _INITIAL_BALL_SPEED_PPM)
                 #
                 # Randomly deflect the ball in the x direction and make sure
-                # that it is not moving straight down because, with the way
-                # it bounces off the paddle, it will be very difficult, if
-                # not impossible, to get it moving in the x direction at all.
+                # that it is not moving straight down because it can be a
+                # little tricky to get it to deflect to the side off of the
+                # paddle, especially if the user does not realize there is a
+                # way to do it.
                 #
                 serve_angle_degrees = random.randrange(-_MAX_SERVE_ANGLE_DEGREES, _MAX_SERVE_ANGLE_DEGREES)
-                if abs(serve_angle_degrees) < 5:
-                    serve_angle_degrees = math.copysign(5, serve_angle_degrees)
+                if abs(serve_angle_degrees) < 15:
+                    serve_angle_degrees = math.copysign(15, serve_angle_degrees)
                 self.velocity.rotate_ip(serve_angle_degrees)
             else:
                 return
