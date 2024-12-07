@@ -29,6 +29,7 @@ import pygame
 from pygame import Surface
 from pygame import Vector2
 import random
+from Tokens import Tokens
 from typing import override
 
 from ControllerInput import ControllerInput
@@ -152,12 +153,14 @@ class Ball(GameElement):
         #
         # Check if the ball ran off the bottom of the screen
         # Wait for the top of the ball to disappear under the screen so
-        # that it can be seen falling off the screen
+        # that it can be seen falling off the screen.
+        # The player loses a token every time this happens.
         #
         if self.top > screen_rect.bottom:
             self.topleft = (self._starting_x, self._starting_y)
             self.velocity = Vector2(0, 0)
             self._has_been_served = False
+            Tokens.lose(1)
 
         # Handle collisions with the sides and top of the screen
         if self.left < screen_rect.left:

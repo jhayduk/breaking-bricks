@@ -19,6 +19,7 @@ from Brick import Brick
 from ControllerInput import ControllerInput
 from Paddle import Paddle
 import score
+from Tokens import Tokens
 
 #
 # Parse any arguments passed in
@@ -174,6 +175,7 @@ while not game_over:
     previous_brick_count = len(bricks)
 
     # Draw the scoreboard items
+    Tokens.draw(screen)
     score.draw(screen)
 
     # Draw the elements

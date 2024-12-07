@@ -20,7 +20,12 @@ from pygame.color import Color
 from pygame.math import Vector2
 
 _FONT_NAME = "Arial"
-_FONT_SIZE = 24
+FONT_SIZE = 24
+"""
+FONT_SIZE can be read by other modules in order to size the scoreboard. This
+is used in the tokens module so that the tokens are the same size as the
+digits in the score. This should only ever be read and should not be written.
+"""
 _TEXT_COLOR = Color('white')
 
 _SPEED_FACTOR = math.sqrt(1000)
@@ -45,7 +50,7 @@ def draw(screen: Surface):
     # essentially make it a static variable for the draw function.
     #
     if not hasattr(draw, "font"):
-        draw.font = pygame.font.SysFont(_FONT_NAME, _FONT_SIZE, bold=True)
+        draw.font = pygame.font.SysFont(_FONT_NAME, FONT_SIZE, bold=True)
 
     text = draw.font.render(f"{_score:,}", True, _TEXT_COLOR)
     text_rect = text.get_rect()
