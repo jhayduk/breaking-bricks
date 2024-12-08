@@ -26,7 +26,7 @@ FONT_SIZE can be read by other modules in order to size the scoreboard. This
 is used in the tokens module so that the tokens are the same size as the
 digits in the score. This should only ever be read and should not be written.
 """
-_TEXT_COLOR = Color('white')
+_TEXT_COLOR = Color("white")
 
 _SPEED_FACTOR = math.sqrt(1000)
 """

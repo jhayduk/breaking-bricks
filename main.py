@@ -17,6 +17,7 @@ import pygame
 from Ball import Ball
 from Brick import Brick
 from ControllerInput import ControllerInput
+from GameOver import GameOver
 from Paddle import Paddle
 import score
 from Tokens import Tokens
@@ -120,8 +121,9 @@ elements.append(ball)
 #
 clock = pygame.time.Clock()
 game_over = False
+quit_game = False
 previous_brick_count = len(bricks)
-while not game_over:
+while not quit_game:
     dt = clock.tick(fps)
 
     # Clear the screen
@@ -134,7 +136,7 @@ while not game_over:
         if args.show_all_events:
             print(event)
         if event.type == pygame.QUIT:
-            game_over = True
+            quit_game = True
         if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB:
             show_controller_status = not show_controller_status
 
@@ -172,11 +174,20 @@ while not game_over:
     #
     if len(bricks) == 0 and previous_brick_count != 0:
         score.screen_cleared(ball.velocity)
+        Tokens.add(1)
     previous_brick_count = len(bricks)
 
     # Draw the scoreboard items
     Tokens.draw(screen)
     score.draw(screen)
+
+    #
+    # Check if the player just ran out of tokens. If so, then that is game over
+    #
+    if not game_over and Tokens.num_tokens <= 0:
+        game_over = True
+        elements.remove(ball)
+        elements.append(GameOver(screen))
 
     # Draw the elements
     for element in elements:
