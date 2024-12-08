@@ -2,6 +2,7 @@ import pygame
 from pygame import Surface
 from pygame.event import Event
 from pygame.math import Vector2
+from typing import Union
 
 
 class GameElement(pygame.Rect):
@@ -49,12 +50,19 @@ class GameElement(pygame.Rect):
     but this class' version can be used for simple elements.
     """
     def __init__(self,
-                 image_file: str,
+                 image: Union[str, Surface],
                  x: int = 0,
                  y: int = 0,
                  velocity: Vector2 = Vector2(0, 0),
                  collidable: bool = True):
         """
+        :param image: The name of the file, including the relative path
+                        to the file that contains the image to be displayed
+                        for the element, or a pygame.Surface object. If the
+                        name of a file is given, it is assumed to contain
+                        alpha information for transparency. The surface
+                        created from this image will have the convert_alpha
+                        method called on it to improve blit performance.
         :param image_file: The name of the file, including the relative path
                     to the file that contains the image to be displayed for
                     the element. While not necessary, it is assumed to
@@ -85,8 +93,14 @@ class GameElement(pygame.Rect):
             print(f"WARNING: pygame was not initialized when a {self.__class__.__name__} object was instantiated. It has now been initialized, but pygame.init() should normally be called before instantiating any instances of the {self.__class__.__name__} class.")
             pygame.init()
 
-        # Load the image
-        self.image = pygame.image.load(image_file).convert_alpha()
+        # Load the image if a file path is provided, otherwise use the provided surface
+        if isinstance(image, str):
+            self.image = pygame.image.load(image).convert_alpha()
+        elif isinstance(image, Surface):
+            self.image = image
+        else:
+            raise ValueError("The image parameter must be either a file path or a pygame.Surface object.")
+
         image_rect = self.image.get_rect()
 
         # Initialize the Rect with the size of the image
