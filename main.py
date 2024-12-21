@@ -17,7 +17,7 @@ import pygame
 from Ball import Ball
 from Brick import Brick
 from ControllerInput import ControllerInput
-from GameOver import GameOver
+from OverlayScreen import OverlayScreen
 from Paddle import Paddle
 import score
 from Tokens import Tokens
@@ -26,6 +26,7 @@ from Tokens import Tokens
 # Parse any arguments passed in
 #
 parser = argparse.ArgumentParser(description="Run the Breaking Bricks game.")
+parser.add_argument('--num-brick-rows', type=int, default=5, help='The number of rows of bricks to start with. This is used for testing and should normally be left at the default of 5')
 parser.add_argument('--show-all-events', action='store_true', help='Show all Pygame events')
 args = parser.parse_args()
 
@@ -77,7 +78,7 @@ elements.append(paddle)
 #
 sample_brick = Brick()
 brick_gap = int(sample_brick.width * 0.10)
-brick_rows = 5
+brick_rows = args.num_brick_rows if args.num_brick_rows else 5
 brick_cols = screen.get_width() // (sample_brick.width + brick_gap)
 
 #
@@ -173,8 +174,15 @@ while not quit_game:
     # cleared in this frame.
     #
     if len(bricks) == 0 and previous_brick_count != 0:
+        # Add the screen cleared bonus to the score and the tokens
         score.screen_cleared(ball.velocity)
         Tokens.add(1)
+
+        # Remove the ball and display the "You Won!" screen
+        # TODO: Add multiple levels instead of stopping after the first level is cleared
+        elements.remove(ball)
+        elements.append(OverlayScreen("You Won!", screen))
+
     previous_brick_count = len(bricks)
 
     # Draw the scoreboard items
@@ -187,7 +195,7 @@ while not quit_game:
     if not game_over and Tokens.num_tokens <= 0:
         game_over = True
         elements.remove(ball)
-        elements.append(GameOver(screen))
+        elements.append(OverlayScreen("Game Over", screen))
 
     # Draw the elements
     for element in elements:
