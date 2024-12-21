@@ -7,8 +7,8 @@ A game inspired by Atari's classic *Breakout* and the "Exploring Game Mechanics 
 Run using pipenv:
 
 ```bash
-pipenv shell
 pipenv install
+pipenv shell
 python main.py
 ```
 
