@@ -101,4 +101,4 @@ def screen_cleared(ball_velocity: Vector2):
 
     :param ball_velocity:
     """
-    _update(500, ball_velocity)
+    _update(100, ball_velocity)
