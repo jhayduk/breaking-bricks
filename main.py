@@ -7,9 +7,9 @@ Notes:
 
 Run with:
 
+pipenv install
 pipenv shell
 python main.py
-
 """
 import argparse
 import pygame
@@ -208,4 +208,7 @@ while not quit_game:
     # Update the display to pick up what was drawn above for this frame
     pygame.display.update()
 
+#
+# Quick the game and exit out of the program
+#
 pygame.quit()
