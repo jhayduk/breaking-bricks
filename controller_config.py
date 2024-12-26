@@ -7,6 +7,8 @@ for each model and can be read with
 
 This dictionary is considered internal to the ControllerInput class code
 and is not intended to be used elsewhere.
+
+This file is specific for the breaking-bricks game.
 """
 _button_mapping = {
     "default": {
