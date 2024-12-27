@@ -105,7 +105,7 @@ class GameElement(pygame.Rect):
         self.velocity = velocity
         self.collidable = collidable
 
-    def update(self, dt: int, events: list[Event] = None, screen: Surface = None):
+    def update(self, dt: int, events: list[Event] = None, screen: Surface = None, **kwargs):
         """
         Update the position of the GameElement based on its velocity and the time delta.
 
