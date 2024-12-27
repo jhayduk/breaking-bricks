@@ -61,14 +61,9 @@ class GameElement(pygame.Rect):
                         for the element, or a pygame.Surface object. If the
                         name of a file is given, it is assumed to contain
                         alpha information for transparency. The surface
-                        created from this image will have the convert_alpha
-                        method called on it to improve blit performance.
-        :param image_file: The name of the file, including the relative path
-                    to the file that contains the image to be displayed for
-                    the element. While not necessary, it is assumed to
-                    contain alpha information for transparency. The surface
-                    created from this image will have the convert_alpha
-                    method called on it to improve blit performance.
+                        created from this image file will have the
+                        convert_alpha method called on it to improve blit
+                        performance.
         :param x: The initial horizontal position, in pixels, relative to the
                     top left of the screen, of the element.
         :param y: The initial vertical position, in pixels, relative to the
