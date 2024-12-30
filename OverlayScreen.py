@@ -60,7 +60,7 @@ class OverlayScreen(GameElement):
     @override
     def collided_with(self, other_element: GameElement):
         """
-        The OverlayScreen object does not participate in collision detectioon,
+        The OverlayScreen object does not participate in collision detection,
         so this is bypassed.
         """
         pass
