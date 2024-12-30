@@ -50,10 +50,10 @@ class ControllerInput:
             num_joysticks = pygame.joystick.get_count()
             if pygame.joystick.get_count() > 0:
                 print(f"Found {num_joysticks} joysticks")
-                for id in range(num_joysticks):
-                    joystick = pygame.joystick.Joystick(id)
+                for joystick_id in range(num_joysticks):
+                    joystick = pygame.joystick.Joystick(joystick_id)
                     self._joysticks.append(joystick)
-                    print(f"  Joystick {id}")
+                    print(f"  Joystick {joystick_id}")
                     print(f"    Name: {joystick.get_name()}")
                     print(f"    GUID: {joystick.get_guid()}")
                     print(f"    Number of axis: {joystick.get_numaxes()}")

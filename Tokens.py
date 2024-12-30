@@ -56,7 +56,7 @@ class Tokens:
             x_offset_between_tokens = min(cls.max_space_for_all_tokens / cls.num_tokens, cls.image_rect.width)
 
             for token_index in range(cls.num_tokens):
-                cls.image_rect.x = cls.image_rect.width + (token_index * x_offset_between_tokens)
+                cls.image_rect.x = int(cls.image_rect.width + (token_index * x_offset_between_tokens))
                 screen.blit(cls.image, cls.image_rect)
 
     @classmethod

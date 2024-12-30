@@ -2,7 +2,7 @@
 Ball
 
 The Ball is a GameElement starts the game at the starting position. When a
-a start button is pressed it then starts falling in a semi-random direction
+start button is pressed it then starts falling in a semi-random direction
 and then can bounce off of the paddle, the top and side of the screen and the
 bricks. If the ball hits a brick, it bounces off of it, but the brick "breaks"
 and disappears. If the ball falls off the bottom of the screen, it resets to
@@ -36,7 +36,7 @@ from ControllerInput import ControllerInput
 from arcade_tools.GameElement import GameElement
 from Paddle import Paddle
 
-_BALL_IMAGE_FILE="./images/football.png"
+_BALL_IMAGE_FILE = "./images/football.png"
 _INITIAL_BALL_SPEED_PPM = 0.25
 _MINIMUM_BALL_Y_VELOCITY_PPM = _INITIAL_BALL_SPEED_PPM
 _MAX_SERVE_ANGLE_DEGREES = 60
@@ -119,7 +119,7 @@ class Ball(GameElement):
                         ignored by this method.
         """
         # Check that required parameters have been supplied
-        assert screen is not None , f"INTERNAL ERROR: A screen parameter MUST be supplied to the {self.__class__.__name__}.update() method"
+        assert screen is not None, f"INTERNAL ERROR: A screen parameter MUST be supplied to the {self.__class__.__name__}.update() method"
 
         if not self._has_been_served:
             """
@@ -146,7 +146,7 @@ class Ball(GameElement):
                 return
 
         # Update the ball's position
-        self.move_ip(self.velocity.x * dt, self.velocity.y * dt)
+        self.rect.move_ip(self.velocity.x * dt, self.velocity.y * dt)
 
         screen_rect = screen.get_rect()
 
@@ -156,18 +156,18 @@ class Ball(GameElement):
         # that it can be seen falling off the screen.
         # The player loses a token every time this happens.
         #
-        if self.top > screen_rect.bottom:
-            self.topleft = (self._starting_x, self._starting_y)
+        if self.rect.top > screen_rect.bottom:
+            self.rect.topleft = (self._starting_x, self._starting_y)
             self.velocity = Vector2(0, 0)
             self._has_been_served = False
             Tokens.lose(1)
 
         # Handle collisions with the sides and top of the screen
-        if self.left < screen_rect.left:
+        if self.rect.left < screen_rect.left:
             self.velocity.x = abs(self.velocity.x)
-        elif self.right > screen_rect.right:
+        elif self.rect.right > screen_rect.right:
             self.velocity.x = -abs(self.velocity.x)
-        if self.top < screen_rect.top:
+        if self.rect.top < screen_rect.top:
             self.velocity.y = abs(self.velocity.y)
 
     @override
@@ -185,20 +185,20 @@ class Ball(GameElement):
         slightly. This makes the game more challenging as time goes on.
         """
         # Completely enclosed
-        if other_element.contains(self):
+        if other_element.rect.contains(self):
             self.velocity.y = abs(self.velocity.y)
         else:
             # bottom
-            if self.bottom > other_element.bottom:
+            if self.rect.bottom > other_element.rect.bottom:
                 self.velocity.y = abs(self.velocity.y)
             # top
-            elif self.top < other_element.top:
+            elif self.rect.top < other_element.rect.top:
                 self.velocity.y = -abs(self.velocity.y)
             # right
-            if self.right > other_element.right:
+            if self.rect.right > other_element.rect.right:
                 self.velocity.x = abs(self.velocity.x)
             # left
-            elif self.left < other_element.left:
+            elif self.rect.left < other_element.rect.left:
                 self.velocity.x = -abs(self.velocity.x)
 
         # Transfer a small amount of the x velocity of the other_object to the ball.

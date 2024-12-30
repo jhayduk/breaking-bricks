@@ -25,7 +25,7 @@ from typing import override
 from arcade_tools.GameElement import GameElement
 import score
 
-_BRICK_IMAGE_FILE="./images/brick.png"
+_BRICK_IMAGE_FILE = "./images/brick.png"
 
 
 class Brick(GameElement):
@@ -87,7 +87,7 @@ class Brick(GameElement):
         """
         self.was_hit = True
 
-        score.brick_destroyed( self._base_value, other_element.velocity)
+        score.brick_destroyed(self._base_value, other_element.velocity)
 
     #
     # GameElement's draw() method is sufficient for Brick objects, so that is NOT overridden

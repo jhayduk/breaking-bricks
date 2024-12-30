@@ -29,7 +29,7 @@ from typing import override
 from arcade_tools.GameElement import GameElement
 from ControllerInput import ControllerInput
 
-_PADDLE_IMAGE_FILE="./images/paddle.png"
+_PADDLE_IMAGE_FILE = "./images/paddle.png"
 _MAX_PADDLE_SPEED_PPM = 0.55
 
 
@@ -52,7 +52,7 @@ class Paddle(GameElement):
         TODO: Is there a way to not have multiple users of the paddle object?
         """
         if not cls._instance:
-            cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self, x, y):
@@ -97,10 +97,10 @@ class Paddle(GameElement):
                         ignored by this method.
         """
         # Check that required parameters have been supplied
-        assert screen is not None , f"INTERNAL ERROR: A screen parameter MUST be supplied to the {self.__class__.__name__}.update() method"
+        assert screen is not None, f"INTERNAL ERROR: A screen parameter MUST be supplied to the {self.__class__.__name__}.update() method"
 
         self.velocity.x = self._controller_input.paddle() * _MAX_PADDLE_SPEED_PPM
-        self.x += self.velocity.x * dt
+        self.rect.x += self.velocity.x * dt
 
         #
         # Check to make sure the updated position does not place any part of
@@ -108,8 +108,8 @@ class Paddle(GameElement):
         # edge that it would have gone past.
         #
         screen_rect = screen.get_rect()
-        self.left = max(self.left, screen_rect.left)
-        self.right = min(self.right, screen_rect.right)
+        self.rect.left = max(self.rect.left, screen_rect.left)
+        self.rect.right = min(self.rect.right, screen_rect.right)
 
     @override
     def collided_with(self, other_element: GameElement):

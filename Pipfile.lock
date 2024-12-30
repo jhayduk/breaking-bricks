@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5a6a79eb413194634999feba660122fc1fc3c4bf001fe8b49c2b955776e0a59f"
+            "sha256": "2061b99695b4346a028405c43c34e2e4b90ec5b32ab30c7ed1f330f17daf4808"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -19,8 +19,7 @@
     "default": {
         "arcade-tools": {
             "editable": true,
-            "git": "https://github.com/jhayduk/arcade-tools.git",
-            "ref": "fb277c225599276657c12909fc89123c8b59aee9"
+            "path": "../arcade-tools"
         },
         "pygame": {
             "hashes": [

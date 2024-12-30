@@ -4,7 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-arcade-tools = {git = "https://github.com/jhayduk/arcade-tools.git", ref = "v0.1.1", editable = true}
+# TODO: For now, use the develop branch of arcade-tools. This game serves as the current testbed for the tools
+#arcade-tools = {git = "https://github.com/jhayduk/arcade-tools.git", ref = "v0.1.1", editable = true}
+arcade-tools = {path = "../arcade-tools", editable = true}
 pygame = "==2.6.1"
 
 [dev-packages]

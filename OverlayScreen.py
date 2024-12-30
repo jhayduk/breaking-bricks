@@ -48,9 +48,8 @@ class OverlayScreen(GameElement):
         #
         super().__init__(overlay, x=0, y=0, velocity=Vector2(0, 0), collidable=False)
 
-
     @override
-    def update(self, *args, **kargs):
+    def update(self, *args, **kwargs):
         """
         The OverlayScreen object stays once displayed, so the GameElement update
         method is bypassed.

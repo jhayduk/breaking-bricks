@@ -77,9 +77,9 @@ elements.append(paddle)
 # to get the dimensions and then the brick is released.
 #
 sample_brick = Brick()
-brick_gap = int(sample_brick.width * 0.10)
+brick_gap = int(sample_brick.rect.width * 0.10)
 brick_rows = args.num_brick_rows if args.num_brick_rows else 5
-brick_cols = screen.get_width() // (sample_brick.width + brick_gap)
+brick_cols = screen.get_width() // (sample_brick.rect.width + brick_gap)
 
 #
 # To even out the gap on the sides of the screen, the x gap on the last
@@ -90,8 +90,8 @@ brick_cols = screen.get_width() // (sample_brick.width + brick_gap)
 # To make things look somewhat symmetric and extra gap at the top of the
 # set of bricks is added.
 #
-gapped_row_height = sample_brick.height + brick_gap
-gapped_brick_width = sample_brick.width + brick_gap
+gapped_row_height = sample_brick.rect.height + brick_gap
+gapped_brick_width = sample_brick.rect.width + brick_gap
 block_set_width = (gapped_brick_width * brick_cols) - brick_gap
 side_gap = (screen.get_width() - block_set_width) // 2
 top_gap = side_gap
@@ -148,7 +148,7 @@ while not quit_game:
     # Check for and handle collisions between objects
     for element in [e for e in elements if e.collidable]:
         other_elements = [e for e in elements if e is not element and e.collidable]
-        elements_collided_with_indexes = element.collidelistall(other_elements)
+        elements_collided_with_indexes = element.rect.collidelistall(other_elements)
         for element_collided_with_index in elements_collided_with_indexes:
             element.collided_with(other_elements[element_collided_with_index])
 
