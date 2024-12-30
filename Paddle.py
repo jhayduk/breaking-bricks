@@ -26,7 +26,7 @@ import pygame
 from pygame import Surface
 from typing import override
 
-from GameElement import GameElement
+from arcade_tools.GameElement import GameElement
 from ControllerInput import ControllerInput
 
 _PADDLE_IMAGE_FILE="./images/paddle.png"

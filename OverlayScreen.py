@@ -4,7 +4,7 @@ from pygame.color import Color
 from pygame.math import Vector2
 from typing import override
 
-from GameElement import GameElement
+from arcade_tools.GameElement import GameElement
 
 
 class OverlayScreen(GameElement):

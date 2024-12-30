@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+arcade-tools = {git = "https://github.com/jhayduk/arcade-tools.git", ref = "v0.1.1", editable = true}
 pygame = "==2.6.1"
 
 [dev-packages]
@@ -11,4 +12,3 @@ pygame = "==2.6.1"
 [requires]
 python_version = "3.12"
 python_full_version = "3.12.7"
-

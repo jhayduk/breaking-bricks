@@ -33,7 +33,7 @@ from Tokens import Tokens
 from typing import override
 
 from ControllerInput import ControllerInput
-from GameElement import GameElement
+from arcade_tools.GameElement import GameElement
 from Paddle import Paddle
 
 _BALL_IMAGE_FILE="./images/football.png"

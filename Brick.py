@@ -22,7 +22,7 @@ import pygame
 from pygame import Vector2
 from typing import override
 
-from GameElement import GameElement
+from arcade_tools.GameElement import GameElement
 import score
 
 _BRICK_IMAGE_FILE="./images/brick.png"
