@@ -1,30 +1,5 @@
-"""
-Paddle
-
-The Paddle is a GameElement moves back and forth near the bottom of screen and
-is used to deflect the ball to both keep it in play and in an attempt to break
-the bricks by bouncing the ball into them.
-
-The Paddle is a subclass of GameElement, which means it is updatable and
-drawable on the game screen.
-
-It has x and y positions (as well as the topleft, bottom, etc. variables
-because it is ultimately a subclass of Rect).
-
-The x and y positions are always defined in pixels and refer to the top left
-corner of the image. The x and y values are always relative to the top left
-corner of the game screen itself, which is defined to be at x=0, y=0.
-
-The velocity is a Vector2 value in pixels per millisecond (ppm), with a unit
-vector pointing 1 ppm to the right and 1 ppm down (↘).
-
-For the paddle, the velocity is always only in the x direction. For moving
-the paddle itself, a velocity is not really needed. However, it is calculated
-and updated so that it can be transferred to the ball when the ball is hit.
-"""
 import pygame
-from pygame import Surface
-from typing import override
+import typing
 
 from arcade_tools.GameElement import GameElement
 from ControllerInput import ControllerInput
@@ -34,6 +9,30 @@ _MAX_PADDLE_SPEED_PPM = 0.55
 
 
 class Paddle(GameElement):
+    """
+    The Paddle is a GameElement moves back and forth near the bottom of screen and
+    is used to deflect the ball to both keep it in play and in an attempt to break
+    the bricks by bouncing the ball into them.
+
+    The Paddle is a subclass of GameElement, which means it is updatable and
+    drawable on the game screen.
+
+    Because it is a GameElement, it has a rect attribute which has x and y
+    positions as well as all the standard pygame.rect attributes like
+    topleft and center.
+
+    The x and y positions are always defined in pixels and refer to the top left
+    corner of the image. The x and y values are always relative to the top left
+    corner of the game screen itself, which is defined to be at x=0, y=0.
+
+    The Paddle also has a velocity which is a Vector2 value in pixels per
+    millisecond (ppm), with a unit vector pointing 1 ppm to the right and
+    1 ppm down (↘).
+
+    For the paddle, the velocity is always only in the x direction. For moving
+    the paddle itself, a velocity is not really needed. However, it is calculated
+    and updated so that it can be transferred to the ball when the ball is hit.
+    """
     # The single instance of the paddle. This is intended to be used internally only.
     _instance = None
 
@@ -57,14 +56,12 @@ class Paddle(GameElement):
 
     def __init__(self, x, y):
         if not self._is_initialized:
-            #
-            # Make sure pygame is initialized. Normally, this is expected to be
-            # done before elements are created, so issue a warning if it had to
-            # be done here.
-            #
+            # Make sure pygame is initialized.
             if not pygame.get_init():
-                print(f"WARNING: pygame was not initialized when a {self.__class__.__name__} object was instantiated. It has now been initialized, but pygame.init() should normally be called before instantiating any instances of the {self.__class__.__name__} class.")
-                pygame.init()
+                raise RuntimeError(
+                    f"Pygame must be initialized before creating a {self.__class__.__name__} object. "
+                    f"Please call pygame.init() before using this class."
+                )
 
             #
             # Grab a local pointer to the singleton ControllerInput object so that
@@ -84,12 +81,12 @@ class Paddle(GameElement):
             #
             self._is_initialized = True
 
-    @override
-    def update(self, dt: int, screen: Surface = None, **kwargs):
+    @typing.override
+    def update(self, dt: int, screen: pygame.Surface = None, **kwargs):
         """
         :param dt: The number of milliseconds since the last call to update.
                     This is used with any movement calculations to help
-                    smooth and jitter in the frame rate.
+                    smooth any jitter in the frame rate.
         :param screen: The screen the paddle will be drawn on. This is used to
                         make sure the paddle does not go off the screen and
                         MUST be supplied.
@@ -111,7 +108,7 @@ class Paddle(GameElement):
         self.rect.left = max(self.rect.left, screen_rect.left)
         self.rect.right = min(self.rect.right, screen_rect.right)
 
-    @override
+    @typing.override
     def collided_with(self, other_element: GameElement):
         """
         The paddle itself does not react to being collided with, so anything
